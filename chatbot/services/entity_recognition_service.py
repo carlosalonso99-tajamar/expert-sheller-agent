@@ -30,4 +30,5 @@ def identify_entities(text):
     """
 
     response = llm.invoke(prompt)
+    print(response.content)
     return response.content  # Devuelve la respuesta del modelo

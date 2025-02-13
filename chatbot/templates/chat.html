@@ -6,8 +6,37 @@
     <title>Chat con el Bot</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
-    <div class="flex flex-col h-screen w-full max-w-2xl mx-auto bg-white shadow-lg">
+<body class="bg-gray-100 flex flex-col md:flex-row h-screen relative">
+
+    <!-- 📌 Sidebar (Panel de Administración) -->
+    <aside id="sidebar" class="w-64 bg-white shadow-lg p-4 flex flex-col fixed md:relative h-screen transition-transform transform md:translate-x-0 -translate-x-full">
+        <h2 class="text-xl font-bold text-center mb-4">📂 Panel de Administración</h2>
+
+        <!-- 📌 Botón para subir archivos -->
+        <input type="file" id="admin-file-input" class="hidden">
+        <button id="admin-upload-btn" class="bg-purple-600 text-white px-4 py-2 rounded-lg mb-4 w-full">
+            ➕ Subir Archivo
+        </button>
+
+        <!-- 📜 Lista de PDFs subidos -->
+        <h3 class="text-lg font-semibold mb-2">📜 PDFs Subidos</h3>
+        <ul id="pdf-list" class="space-y-2 overflow-y-auto flex-1">
+            <!-- Los PDFs se cargarán aquí dinámicamente -->
+        </ul>
+
+        <!-- 📌 Contenedor para mostrar notificaciones -->
+        <div id="upload-notification" class="fixed bottom-4 left-4 md:left-1/4 bg-gray-900 text-white text-sm px-4 py-2 rounded-lg opacity-0 transition-opacity duration-500">
+            <!-- Aquí aparecerán las notificaciones -->
+        </div>
+    </aside>
+
+    <!-- 📌 Botón para abrir/cerrar sidebar en móviles -->
+    <button id="toggle-sidebar" class="absolute top-4 left-4 bg-gray-900 text-white px-3 py-2 rounded-md md:hidden">
+        ➡️
+    </button>
+
+    <!-- Contenedor principal -->
+    <main class="flex-1 flex flex-col max-w-2xl mx-auto bg-white shadow-lg">
         <div class="bg-blue-600 text-white p-4 text-center text-xl font-bold">Chat con el Bot</div>
 
         <div id="chatbox" class="flex-1 overflow-y-auto p-4 space-y-4">
@@ -17,38 +46,90 @@
         <div class="p-4 flex items-center space-x-2">
             <input id="user-input" type="text" class="flex-1 p-2 border rounded-lg" placeholder="Escribe tu mensaje...">
             <button id="send-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Enviar</button>
-        
-            <!-- 📌 Botón para subir archivos -->
+
+            <!-- 📌 Botón opcional para subir archivos desde el chat -->
             <input type="file" id="file-input" class="hidden">
             <button id="upload-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg">📁 Subir Archivo</button>
         </div>
-        
-    </div>
+    </main>
 
     <script>
-        document.getElementById("send-btn").addEventListener("click", sendMessage);
-        document.getElementById("user-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") sendMessage();
+        // 📌 Sidebar toggle en móviles
+        const sidebar = document.getElementById("sidebar");
+        const toggleSidebarBtn = document.getElementById("toggle-sidebar");
+
+        toggleSidebarBtn.addEventListener("click", () => {
+            if (sidebar.classList.contains("-translate-x-full")) {
+                sidebar.classList.remove("-translate-x-full");
+                toggleSidebarBtn.innerHTML = "⬅️";
+            } else {
+                sidebar.classList.add("-translate-x-full");
+                toggleSidebarBtn.innerHTML = "➡️";
+            }
         });
-    
-        document.getElementById("upload-btn").addEventListener("click", function() {
-            document.getElementById("file-input").click();  // 📌 Abrir el selector de archivos
+
+        // 📌 Ahora el botón "➕ Subir Archivo" del Panel de Administración sube archivos
+        document.getElementById("admin-upload-btn").addEventListener("click", function() {
+            document.getElementById("admin-file-input").click();
         });
-    
-        document.getElementById("file-input").addEventListener("change", function(event) {
+
+        document.getElementById("admin-file-input").addEventListener("change", function(event) {
             let file = event.target.files[0];
             if (file) uploadFile(file);
         });
-    
+
+        function uploadFile(file) {
+            let formData = new FormData();
+            formData.append("file", file);
+
+            showNotification("⏳ Subiendo...", false, true);
+
+            fetch("/chatbot/api/upload/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification(`✅ Archivo subido: ${file.name}`);
+                loadPdfs();  // Recargar lista de PDFs
+            })
+            .catch(error => {
+                console.error("⛔ Error al subir el archivo:", error);
+                showNotification("⛔ Error al subir el archivo.", true);
+            });
+        }
+
+        function showNotification(message, isError = false, isUploading = false) {
+            let notification = document.getElementById("upload-notification");
+            notification.textContent = message;
+            notification.classList.remove("opacity-0", "bg-red-600", "bg-green-600");
+
+            if (isError) {
+                notification.classList.add("bg-red-600");
+            } else if (!isUploading) {
+                notification.classList.add("bg-green-600");
+            } else {
+                notification.classList.add("bg-yellow-600");
+            }
+
+            setTimeout(() => {
+                notification.classList.add("opacity-0");
+            }, 3000);
+        }
+
+        // 📌 El botón "Enviar" sigue disponible para otra función
+        document.getElementById("send-btn").addEventListener("click", function() {
+            sendMessage();
+        });
         function sendMessage() {
             let inputField = document.getElementById("user-input");
             let message = inputField.value.trim();
             if (message === "") return;
-    
+
             appendMessage("Tú", message, "bg-blue-100 text-blue-800");
-    
+
             inputField.value = "";
-    
+
             fetch("/chatbot/api/chatbot/?message=" + encodeURIComponent(message))
                 .then(response => response.json())
                 .then(data => appendMessage("Bot", data.response, "bg-gray-200 text-gray-800"))
@@ -57,40 +138,38 @@
                     appendMessage("Bot", "Error al conectar con el servidor.", "bg-red-100 text-red-800");
                 });
         }
-    
-        function uploadFile(file) {
-            let formData = new FormData();
-            formData.append("file", file);
 
-            console.log("🔹 Enviando archivo:", file.name); // Debug
-
-            fetch("/chatbot/api/upload/", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json()) // Convertir la respuesta a JSON
-            .then(data => {
-                console.log("✅ Respuesta del servidor:", data);
-                appendMessage("Bot", data.message, "bg-gray-200 text-gray-800");
-            })
-            .catch(error => {
-                console.error("⛔ Error al subir el archivo:", error);
-                appendMessage("Bot", "Error al subir el archivo.", "bg-red-100 text-red-800");
-            });
-        }
-
-
-    
         function appendMessage(sender, text, bgClass) {
             let chatbox = document.getElementById("chatbox");
             let messageElement = document.createElement("div");
             messageElement.classList = `p-3 rounded-lg ${bgClass}`;
             messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
             chatbox.appendChild(messageElement);
-            chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll
+            chatbox.scrollTop = chatbox.scrollHeight;
         }
+
+        // 📌 Cargar lista de PDFs desde el backend
+        function loadPdfs() {
+            fetch("/chatbot/api/list-pdfs/")
+                .then(response => response.json())
+                .then(data => {
+                    let pdfList = document.getElementById("pdf-list");
+                    pdfList.innerHTML = "";
+
+                    data.pdfs.forEach(pdf => {
+                        let listItem = document.createElement("li");
+                        listItem.classList = "p-2 bg-gray-200 rounded-lg";
+                        listItem.innerHTML = `<a href="${pdf.url}" target="_blank">${pdf.name}</a>`;
+                        pdfList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error("⛔ Error al cargar PDFs:", error));
+        }
+
+        // 📌 Cargar PDFs al abrir la página
+        loadPdfs();
+        
     </script>
-    
-    
+
 </body>
 </html>

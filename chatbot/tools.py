@@ -1,27 +1,33 @@
 from chatbot.services.ocr_service import OCRService
-from chatbot.models import PDFTranscription  # Importamos el modelo
-import os
 from chatbot.services.entity_recognition_service import identify_entities
+from langchain.tools import Tool
 
+from chatbot.services.search_products_by_entities_service import search_product_by_entities
+from chatbot.services.translation_service import translate_text
 # Inicializar servicios
 ocr_service = OCRService()
 
 
-def extract_text_from_pdf(pdf_path: str) -> str:
-    """
-    Wrapper para la herramienta OCR, llama al servicio de OCR de Azure y guarda la transcripción.
-    """
-    answer = ocr_service.extract_text_from_pdf(pdf_path)  # Llamar al OCR
+ocr_tool= Tool(
+    name="OCR",
+    func=ocr_service.extract_text_from_pdf,
+    description="Usa esta herramienta si el usuario proporciona un archivo PDF y necesita extraer su texto."
+)
 
-    pdf_filename = os.path.basename(pdf_path)  # Extraer el nombre del archivo
+entity_tool = Tool(
+    name="Entidades",
+    func=identify_entities,
+    description="Usa esta herramienta cuando el usuario aporte alguna caracteristica de ordenador, tenga intencion de compra o de pedir información."
+)
 
-    # Guardar en la base de datos
-    transcription_obj, created = PDFTranscription.objects.get_or_create(
-        pdf_name=pdf_filename,
-        defaults={"pdf_path": pdf_path}
-    )
+db_query_tool = Tool(
+    name="Consulta_BD",
+    func=search_product_by_entities,
+    description="Usa esta herramienta para consultar en la base de datos productos que coincidan con las entidades detectadas."
+)
 
-    transcription_obj.transcription = answer  # Guardar la transcripción
-    transcription_obj.save()
-
-    return answer  # Devolver la transcripción
+translation_tool = Tool(
+    name="Traduccion",
+    func=translate_text,
+    description="Usa esta herramienta para traducir el texto proporcionado a otro idioma."
+)

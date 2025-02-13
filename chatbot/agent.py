@@ -1,31 +1,44 @@
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import AgentType, initialize_agent
-from langchain.tools import Tool
-from chatbot.tools import extract_text_from_pdf  # OCR tool
+from chatbot.tools import ocr_tool, entity_tool, translation_tool, db_query_tool
 from dotenv import load_dotenv
 import os
+from langchain.memory import ConversationBufferMemory
+
 load_dotenv()
-# Crear el modelo de lenguaje
+
+# 🔹 Crear el modelo de lenguaje
 llm = ChatOpenAI(
     model="gpt-4o-mini-2024-07-18",
     temperature=0.7,
-    openai_api_key= os.getenv("OPENAI_API_KEY")
+    openai_api_key=os.getenv("OPENAI_API_KEY")
 )
-
-# Definir herramientas del agente
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+# 🔹 Definir herramientas del agente
 tools = [
-    Tool(
-        name="OCR",
-        func=extract_text_from_pdf,
-        description="Extrae texto de un PDF usando OCR"
-    )
+    ocr_tool,
+    entity_tool,
+    db_query_tool,
+    translation_tool
 ]
 
-# Inicializar el agente
+# 🔹 Instrucciones para el comportamiento del agente
+instructions = """
+Eres un asistente inteligente que ayuda con el procesamiento de texto. 
+
+- Si el usuario envia **PDFs** o **documentos**, usa la herramienta OCR para extraer el texto.
+- Si el usuario pregunta por informacion, tiene intencion de compra o da caracteristicas detalladas, usa la herramienta de **Entidades** para extraer informacion estructurada.
+- Si el usuario solicita **traducir** texto, usa la herramienta de **Traduccion**, si no aporta un mensaje usa tuultima respuesta.
+- No preguntes si quieres usar una herramienta, simplemente ejecútala cuando sea necesario.
+- Si el usuario no solicita nada relacionado con estas herramientas, responde como un chatbot normal con información relevante.
+"""
+
+# 🔹 Inicializar el agente con instrucciones personalizadas
 agent = initialize_agent(
     tools=tools,
     llm=llm,
-    agent=AgentType.OPENAI_FUNCTIONS,  # Agente basado en razonamiento
+    agent=AgentType.OPENAI_FUNCTIONS,  # Agente basado en razonamiento con funciones
     verbose=True,
-    
+    agent_kwargs={"system_message": instructions},  # 📌 Se añaden las instrucciones
+    memory=memory
 )
