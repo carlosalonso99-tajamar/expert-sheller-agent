@@ -1,17 +1,16 @@
 from django.http import JsonResponse
 from chatbot.agent import agent
-from .services.ocr_service import OCRService
 
 from django.shortcuts import render
 import os
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 from .services.save_product_services import save_product_service
+from .services.ocr_service import extract_text_from_pdf
 
 from chatbot.models import PDFTranscription
-from .agent import memory
+# from .agent import memory
 
 def chat_ui(request):
     """
@@ -50,7 +49,6 @@ import os
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-ocr_service = OCRService()
 
 
 
@@ -84,7 +82,7 @@ def upload_document(request):
 
     try:
         # 📌 Extraer el texto del PDF
-        answer = ocr_service.extract_text_from_pdf(save_path)  # Usar la ruta guardada
+        answer = extract_text_from_pdf(save_path)  # Usar la ruta guardada
 
         # 📌 Obtener el nombre base del archivo
         pdf_filename = os.path.basename(save_path)

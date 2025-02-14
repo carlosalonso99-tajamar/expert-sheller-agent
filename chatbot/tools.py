@@ -1,16 +1,16 @@
-from chatbot.services.ocr_service import OCRService
 from chatbot.services.entity_recognition_service import identify_entities
 from langchain.tools import Tool
 
 from chatbot.services.search_products_by_entities_service import search_product_by_entities
 from chatbot.services.translation_service import translate_text
+from chatbot.services.ocr_service import extract_text_from_pdf
 # Inicializar servicios
-ocr_service = OCRService()
+
 
 
 ocr_tool= Tool(
     name="OCR",
-    func=ocr_service.extract_text_from_pdf,
+    func= extract_text_from_pdf,
     description="Usa esta herramienta si el usuario proporciona un archivo PDF y necesita extraer su texto."
 )
 
