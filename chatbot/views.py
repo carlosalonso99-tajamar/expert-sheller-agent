@@ -93,6 +93,7 @@ def upload_document(request):
             defaults={"pdf_path": save_path}
         )
 
+
         # 📌 Guardar la transcripción extraída
         transcription_obj.transcription = answer
         save_product_service(answer)

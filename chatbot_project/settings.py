@@ -16,8 +16,14 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 import os
 
+# Archivos estáticos (CSS, JS, imágenes de diseño)
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]  # ✅ Asegúrate de que esta línea no esté sobrescribiendo MEDIA_ROOT
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Archivos subidos por los usuarios (PDFs, imágenes, etc.)
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # Carpeta donde se guardan los archivos
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # Quick-start development settings - unsuitable for production
@@ -44,6 +50,7 @@ INSTALLED_APPS = [
     "chatbot",
     "tailwind",
     "theme",
+    'django_browser_reload'
 ]
 
 NPM_BIN_PATH = 'npm.cmd' #local
