@@ -35,7 +35,10 @@ SECRET_KEY = "django-insecure-6n%jz7m4ewd84(*v*&-+6d8-vg=dv64q@@d5d!b8cizu%8!3_@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "artishellerchatbot-gkb7gqe0grbpg3e7.spaincentral-01.azurewebsites.net",  # Ej: "mi-django-app.azurewebsites.net"
+    "localhost"  # Opcional: para pruebas locales
+]
 
 
 # Application definition
