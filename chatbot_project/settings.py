@@ -37,7 +37,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "artishellerchatbot-gkb7gqe0grbpg3e7.spaincentral-01.azurewebsites.net",  # Ej: "mi-django-app.azurewebsites.net"
-    "localhost"  # Opcional: para pruebas locales
+    "127.0.0.1"  # Opcional: para pruebas locales
 ]
 
 

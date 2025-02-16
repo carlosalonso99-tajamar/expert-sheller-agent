@@ -8,7 +8,7 @@ from ..models import Product  # Importamos el modelo de producto
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def detect_entities(text):
+def detect_entities(text: str) -> str:
     """
     Llama al modelo de lenguaje para detectar entidades en el texto.
     """

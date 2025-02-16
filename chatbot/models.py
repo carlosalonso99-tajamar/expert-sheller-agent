@@ -13,7 +13,6 @@ class PDFTranscription(models.Model):
     def __str__(self):
         return f"{self.pdf_name} - {self.created_at}"
 
-from django.db import models
 
 from django.db import models
 

@@ -15,7 +15,7 @@ llm = ChatOpenAI(
 ENTITIES = ["precio", "modelo", "almacenamiento", "memoria", "gráfica", "procesador",
             "pantalla", "peso", "color", "audio"]
 
-def identify_entities(text):
+def identify_entities(text: str) -> dict:
     """
     Llama al modelo de lenguaje para detectar entidades en el texto.
     """

@@ -21,7 +21,7 @@ SUPPORTED_LANGUAGES = {
     "pt": "Portugués"
 }
 
-def translate_text(text, target_language="en"):
+def translate_text(text: str, target_language: str ="en") -> str:
     """
     Traduce el texto a un idioma específico usando Azure Translator.
     :param text: Texto a traducir.

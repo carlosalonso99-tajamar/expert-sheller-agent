@@ -4,7 +4,7 @@ from ..models import Product
 # Configuración de logs
 logger = logging.getLogger(__name__)
 
-def search_product_by_entities(entities):
+def search_product_by_entities(entities: dict) -> list:
     """
     Busca productos en la base de datos que coincidan con las entidades extraídas.
     """
