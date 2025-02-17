@@ -53,6 +53,7 @@
             <button id="upload-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg">📁 Hacer pedido</button>
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
         // 📌 Sidebar toggle en móviles
@@ -91,17 +92,25 @@
             let formData = new FormData();
             formData.append("file", file);
 
-            if (isFromAdmin) showNotification("⏳ Subiendo...", false, true);
-            else showNotification("⏳ Se esta procesando tu pedido...")
-
+            if (isFromAdmin) {
+                showNotification("⏳ Subiendo...", false, true);
+            }
+            else {showNotification("⏳ Se esta procesando tu pedido...")
+            appendMessage("bot", "Se esta procesando tu pedido", "bg-yellow-600 text-white");
+            
+            }
             fetch("/chatbot/api/upload/", {
                 method: "POST",
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                if (isFromAdmin) showNotification(`✅ Archivo subido: ${file.name}`);
-                else showNotification("✅ Pedido realizado con exito");
+                if (isFromAdmin) {
+                    showNotification(`✅ Archivo subido: ${file.name}`);
+                }else {
+                    showNotification("✅ Pedido realizado con exito");
+                    appendMessage("bot", `Pedido realizado con exito: ${data.transcription}`, "bg-green-600 text-white");
+                }
                 
                 loadPdfs();  // Recargar lista de PDFs
             })
@@ -155,10 +164,16 @@
             let chatbox = document.getElementById("chatbox");
             let messageElement = document.createElement("div");
             messageElement.classList = `p-3 rounded-lg ${bgClass}`;
-            messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
+
+            // Convertir Markdown a HTML usando marked.js
+            let parsedText = marked.parse(text);
+
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${parsedText}`;
             chatbox.appendChild(messageElement);
             chatbox.scrollTop = chatbox.scrollHeight;
         }
+
+
 
         // 📌 Cargar lista de PDFs desde el backend
         function loadPdfs() {
