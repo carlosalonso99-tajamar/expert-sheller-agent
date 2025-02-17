@@ -5,8 +5,7 @@ from chatbot.services.search_products_by_entities_service import search_product_
 from chatbot.services.translation_service import translate_text
 from chatbot.services.ocr_service import extract_text_from_pdf
 
-
-from .schemas import DBQueryInputSchema
+# from .schemas import DBQueryInputSchema
 
 
 
@@ -23,12 +22,11 @@ entity_tool = Tool(
 )
 
 
-
 db_query_tool = Tool(
     name="Consulta_BD",
     func=search_product_by_entities,
-    description="Usa esta herramienta para consultar en la base de datos productos que coincidan con las entidades detectadas.",
-    args_schema=DBQueryInputSchema,
+    description="Usa esta herramienta para consultar en la base de datos productos que coincidan con las entidades detectadas.(Recibira el JSON de las entidades detectadas)",
+    # args_schema=DBQueryInputSchema,
 )
 
 translation_tool = Tool(

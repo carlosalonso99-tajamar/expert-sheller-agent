@@ -1,0 +1,10 @@
+Modelo: Lenovo ThinkPad X1 Carbon Gen 10
+Precio: 1,599€
+Almacenamiento: 1TB SSD NVMe
+Memoria: 16GB LPDDR5
+Gráfica: Intel Iris Xe Graphics
+Procesador: Intel Core i7-1260P (12ª generación)
+Pantalla: 14" WUXGA (1920x1200) IPS, 400 nits
+Peso: 1.12 kg
+Color: Negro
+Audio: Altavoces Dolby Atmos con 4 micrófonos de campo lejano

@@ -2,6 +2,7 @@
 
 ![alt text](image-1.png)
 
+# [APP](https://artishellerchatbot-gkb7gqe0grbpg3e7.spaincentral-01.azurewebsites.net/)
 
 Este proyecto implementa un **chatbot** con capacidad de búsqueda y consulta sobre una base de datos de productos extraídos desde documentos PDF. Incorpora procesamiento de lenguaje natural, reconocimiento de entidades y herramientas de OCR para gestionar la información de manera eficiente.
 
@@ -52,4 +53,3 @@ El flujo del sistema se divide en dos partes:
   - Aplicar reconocimiento de entidades.
   - Consultar la base de datos y devolver respuestas relevantes.
   - Utilizar OCR como herramienta para el agente.
-

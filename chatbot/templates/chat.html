@@ -9,7 +9,6 @@
     {% tailwind_css %}
 </head>
 <body class="bg-gray-100 flex flex-col md:flex-row h-screen relative">
-
     <!-- 📌 Sidebar (Panel de Administración) -->
     <aside id="sidebar" class="w-64 bg-white shadow-lg p-4 flex flex-col fixed md:relative h-screen transition-transform transform md:translate-x-0 -translate-x-full">
         <h2 class="text-xl font-bold text-center mb-4">📂 Panel de Administración</h2>
@@ -51,7 +50,7 @@
 
             <!-- 📌 Botón opcional para subir archivos desde el chat -->
             <input type="file" id="file-input" class="hidden">
-            <button id="upload-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg">📁 Subir Archivo</button>
+            <button id="upload-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg">📁 Hacer pedido</button>
         </div>
     </main>
 
@@ -77,14 +76,23 @@
 
         document.getElementById("admin-file-input").addEventListener("change", function(event) {
             let file = event.target.files[0];
+            if (file) uploadFile(file, true);
+        });
+        document.getElementById("upload-btn").addEventListener("click", function() {
+            document.getElementById("file-input").click();
+        });
+
+        document.getElementById("file-input").addEventListener("change", function(event) {
+            let file = event.target.files[0];
             if (file) uploadFile(file);
         });
 
-        function uploadFile(file) {
+        function uploadFile(file, isFromAdmin = false) {
             let formData = new FormData();
             formData.append("file", file);
 
-            showNotification("⏳ Subiendo...", false, true);
+            if (isFromAdmin) showNotification("⏳ Subiendo...", false, true);
+            else showNotification("⏳ Se esta procesando tu pedido...")
 
             fetch("/chatbot/api/upload/", {
                 method: "POST",
@@ -92,7 +100,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                showNotification(`✅ Archivo subido: ${file.name}`);
+                if (isFromAdmin) showNotification(`✅ Archivo subido: ${file.name}`);
+                else showNotification("✅ Pedido realizado con exito");
+                
                 loadPdfs();  // Recargar lista de PDFs
             })
             .catch(error => {

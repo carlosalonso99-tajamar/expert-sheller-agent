@@ -1,6 +1,6 @@
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import AgentType, initialize_agent
-# from langchain.callbacks import StdOutCallbackHandler
+from langchain.callbacks import StdOutCallbackHandler
 from chatbot.tools import ocr_tool, entity_tool, translation_tool, db_query_tool
 from dotenv import load_dotenv
 import os
