@@ -1,5 +1,5 @@
 from chatbot.services.entity_recognition_service import identify_entities
-from langchain.tools import Tool, tool
+from langchain.tools import Tool
 
 from chatbot.services.search_products_by_entities_service import search_product_by_entities
 from chatbot.services.translation_service import translate_text

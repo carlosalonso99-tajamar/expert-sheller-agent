@@ -41,6 +41,6 @@ agent = initialize_agent(
     agent=AgentType.OPENAI_FUNCTIONS,  # Agente basado en razonamiento con funciones
     verbose=True,
     agent_kwargs={"system_message": instructions},  # 📌 Se añaden las instrucciones
-    # memory=memory
-    # callbacks=[StdOutCallbackHandler()] 
+    # memory=memory,
+    # callbacks=[StdOutCallbackHandler()]
 )
