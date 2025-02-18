@@ -15,24 +15,24 @@ client = ImageAnalysisClient(
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-def extract_text_from_pdf(pdf_path: str) -> str:
+def extract_text_from_pdf(file_path: str) -> str:
     """
     Convierte un archivo PDF en texto utilizando el servicio OCR de Azure.
     
-    :param pdf_path: Ruta del archivo PDF a procesar.
+    :param file_path: Ruta del archivo PDF a procesar.
     :return: Texto extraído.
     """
-    logging.info(f"📂 Iniciando extracción de texto desde PDF: {pdf_path}")
+    logging.info(f"📂 Iniciando extracción de texto desde PDF: {file_path}")
 
     text_result = []
     
     try:
         # 📌 Verificar si el archivo existe antes de abrirlo
-        if not os.path.exists(pdf_path):
-            logging.error(f"❌ Error: El archivo no existe en la ruta {pdf_path}")
+        if not os.path.exists(file_path):
+            logging.error(f"❌ Error: El archivo no existe en la ruta {file_path}")
             return ""
 
-        doc = fitz.open(pdf_path)  # Abrir el PDF
+        doc = fitz.open(file_path)  # Abrir el PDF
         logging.info(f"📖 Archivo PDF abierto con éxito. Páginas detectadas: {len(doc)}")
 
         for page_num in range(len(doc)):
@@ -64,7 +64,7 @@ def extract_text_from_pdf(pdf_path: str) -> str:
                 logging.warning(f"⚠️ No se detectó texto en la página {page_num + 1}")
 
     except Exception as e:
-        logging.error(f"⛔ Error al procesar el PDF {pdf_path}: {str(e)}", exc_info=True)
+        logging.error(f"⛔ Error al procesar el PDF {file_path}: {str(e)}", exc_info=True)
         return ""
 
     final_text = "\n".join(text_result)
